@@ -1,1 +1,8 @@
-<h1 style="color: blueviolet;">hello world</h1>
+<form action="" method="post">
+    {% csrf_token %}
+    <h1 style="color: brown;">hello {{request.user.username}}</h1>
+    <h1 style="color: brown;">is auth: {{ request.user.is_authenticated }}</h1>
+    <h1 style="color: brown;">id: {{ request.user.id }}</h1>
+    <h1 style="color: brown;">is superuser?: {{ request.user.is_superuser }}</h1>
+</form>
+<a href="{% url 'logout' %}">logout</a>

@@ -1,0 +1,11 @@
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="Name"><br>
+    <input type="password" name="userpassword" placeholder="Password"><br>
+    <input type="submit"><br>
+    <a href="{% url 'signup' %}">don't have acc ?</a>
+</form>
+
+{% if error %}
+    <p>{{error}}</p>
+{% endif %}
