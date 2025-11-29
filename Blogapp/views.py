@@ -3,11 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate ,login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import UserCreationForm
+from .forms import *
+from .models import *
 # Create your views here.
 
 @login_required
 def home(request):
-    return render(request, "blog/home.html")
+    postform = PostForm()
+    context = {'postform':postform}
+    return render(request, "blog/home.html" ,context)
 
 
 def login_func(request):
@@ -37,8 +41,34 @@ def signup(request):
     context = {'form':form}
     return render(request ,"blog/signup.html",context)
 
+@login_required
 def logout(request):
     auth_logout(request)
     return redirect("login")
         
-        
+@login_required
+def change_name(request):
+    if request.method == "POST":
+        newname = request.POST.get('newname','').strip()
+        if newname:
+            user = request.user
+            user.username = newname
+            user.save()
+        return redirect("home")
+    return render(request, "blog/home.html")
+
+
+@login_required
+def create_post(request):
+    if request.method == "POST":
+        x = PostForm(request.POST)
+        if x.is_valid():
+            y = x.save(commit=False)
+            y.user = request.user
+            y.save()
+        return redirect("home")
+            
+
+@login_required
+def profile(request):
+    pass

@@ -1,8 +1,47 @@
-<form action="" method="post">
-    {% csrf_token %}
-    <h1 style="color: brown;">hello {{request.user.username}}</h1>
-    <h1 style="color: brown;">is auth: {{ request.user.is_authenticated }}</h1>
-    <h1 style="color: brown;">id: {{ request.user.id }}</h1>
-    <h1 style="color: brown;">is superuser?: {{ request.user.is_superuser }}</h1>
-</form>
-<a href="{% url 'logout' %}">logout</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+
+
+<body>
+
+    <div class="navbar">
+        <h2><a href="{% url 'home' %}">Hello {{request.user.username}}</a></h2>
+        <div class="menu-btns">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- LEFT COLUMN -->
+        <div class="left-box">
+            <h2>Create Post</h2>
+            <form action="{% url 'create_post' %}" method="post">
+                {% csrf_token %}
+                {{ postform }}
+                <input type="submit" value="Post">
+            </form>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-box">
+            {% for i in posts %}
+            <div class="post-card">
+                <h2>@{{ i.user.username }}</h2>
+                <p><strong>{{ i.title }}</strong></p>
+                <p>{{ i.content }}</p>
+                <p class="created">{{ i.created }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+</html>
