@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>My Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Tailwind custom colors -->
     <script>
@@ -54,22 +55,46 @@
         </div>
 
         <!-- RIGHT - POSTS -->
-        <div class="space-y-6">
-            {% for i in posts %}
-            <div class="backdrop-blur-md bg-white/30 border border-white/40 p-5 rounded-xl shadow">
-                
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-bold">{{ i.user.username }}</h3>
-                    <span class="text-sm text-gray-700">{{ i.created }}</span>
-                </div>
-
-                <p class="text-xl font-semibold mt-2">{{ i.title }}</p>
-                <p class="text-gray-800 mt-1">{{ i.content }}</p>
+         <div class="space-y-6">
+        {% for i in posts %}
+        <div class="backdrop-blur-md bg-white/30 border border-white/40 p-4 rounded-xl shadow">
+            
+            <!-- Post header: user and date -->
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold">{{ i.user.username }}</h3>
+                <span class="text-sm text-gray-700">{{ i.created|date:"M d, Y H:i" }}</span>
             </div>
-            {% empty %}
-            <p>No posts yet.</p>
-            {% endfor %}
+
+            <!-- Post content -->
+            <p class="text-xl font-semibold mt-2">{{ i.title }}</p>
+            <p class="text-gray-800 mt-1">{{ i.content }}</p>
+
+            <!-- Like button aligned to the right -->
+            <div class="flex justify-end mt-3">
+                <form action="{% url 'addLike' i.id %}" method="post">
+                    {% csrf_token %}
+                    <button 
+                        type="submit" 
+                        name="like"
+                        class="flex items-center justify-center gap-1 px-3 py-2 
+                            border border-gray-300 rounded-md 
+                            bg-white 
+                            hover:bg-gray-100 
+                            transition-colors duration-200 
+                            focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <!-- Number on the left inside the button -->
+                        <span class="text-gray-700 font-medium">{{ i.number_of_likes }}</span>
+                        <!-- Like icon -->
+                        <i class="fa fa-thumbs-up text-gray-600 text-lg"></i>
+                    </button>
+                </form>
+            </div>
+
         </div>
+        {% empty %}
+        <p class="text-gray-600">No posts yet.</p>
+        {% endfor %}
+    </div>
 
     </div>
 

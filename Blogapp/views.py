@@ -98,3 +98,14 @@ def delete_task(request,pk):
         post.delete()
         return redirect("profile")
     return render(request,"blog/profile.html")
+
+@login_required
+def addLike(request, post_id):
+    post = Post.objects.get(id = post_id)
+    nlikes = post.number_of_likes()
+    if request.method == "POST":
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)
+    return redirect("home")

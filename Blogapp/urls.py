@@ -10,4 +10,5 @@ urlpatterns = [
     path('create_post', views.create_post ,name="create_post"),
     path('profile', views.profile ,name="profile"),
     path('delete_task/<str:pk>', views.delete_task ,name="delete_task"),
+    path('add_like/<str:post_id>' ,views.addLike ,name="addLike"),
 ]
