@@ -1,47 +1,78 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>My Blog</title>
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navdark: "#222"
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
+<body class="bg-gray-100">
 
-<body>
+    <!-- NAVBAR -->
+    <nav class="w-full bg-navdark text-white flex justify-between items-center px-8 py-4 shadow-lg">
+        <h2 class="text-xl font-semibold">
+            <a href="{% url 'home' %}" class="hover:underline">Hello {{ request.user.username }}</a>
+        </h2>
 
-    <div class="navbar">
-        <h2><a href="{% url 'home' %}">Hello {{request.user.username}}</a></h2>
-        <div class="menu-btns">
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'logout' %}">Logout</a>
+        <div class="space-x-4">
+            <a href="{% url 'profile' %}" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600">Profile</a>
+            <a href="{% url 'logout' %}" class="px-4 py-2 bg-red-600 rounded hover:bg-red-500">Logout</a>
         </div>
-    </div>
+    </nav>
 
-    <div class="main">
-        <!-- LEFT COLUMN -->
-        <div class="left-box">
-            <h2>Create Post</h2>
-            <form action="{% url 'create_post' %}" method="post">
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+
+        <!-- LEFT - CREATE POST -->
+        <div class="backdrop-blur-md bg-white/30 border border-white/40 p-6 rounded-xl shadow">
+            <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Create Post</h2>
+
+            <form action="{% url 'create_post' %}" method="post" class="space-y-4">
                 {% csrf_token %}
                 {{ postform }}
-                <input type="submit" value="Post">
+
+                <input type="submit"
+                       value="Post"
+                       class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 cursor-pointer">
             </form>
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div class="right-box">
+        <!-- RIGHT - POSTS -->
+        <div class="space-y-6">
             {% for i in posts %}
-            <div class="post-card">
-                <h2>@{{ i.user.username }}</h2>
-                <p><strong>{{ i.title }}</strong></p>
-                <p>{{ i.content }}</p>
-                <p class="created">{{ i.created }}</p>
+            <div class="backdrop-blur-md bg-white/30 border border-white/40 p-5 rounded-xl shadow">
+                
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold">{{ i.user.username }}</h3>
+                    <span class="text-sm text-gray-700">{{ i.created }}</span>
+                </div>
+
+                <p class="text-xl font-semibold mt-2">{{ i.title }}</p>
+                <p class="text-gray-800 mt-1">{{ i.content }}</p>
             </div>
+            {% empty %}
+            <p>No posts yet.</p>
             {% endfor %}
         </div>
 
     </div>
 
 </body>
+
 </html>

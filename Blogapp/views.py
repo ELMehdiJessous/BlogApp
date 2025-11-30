@@ -1,16 +1,19 @@
-from django.shortcuts import render ,redirect
+from django.shortcuts import render ,redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate ,login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate ,login as auth_login, logout as auth_logout,update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
 from .forms import *
 from .models import *
+from django.contrib import messages
+from django.db import IntegrityError
 # Create your views here.
 
 @login_required
 def home(request):
     postform = PostForm()
-    context = {'postform':postform}
+    posts = Post.objects.all().order_by('-created')
+    context = {'postform':postform,'posts':posts}
     return render(request, "blog/home.html" ,context)
 
 
@@ -50,11 +53,23 @@ def logout(request):
 def change_name(request):
     if request.method == "POST":
         newname = request.POST.get('newname','').strip()
+        newpassword = request.POST.get('newpassword','').strip()
+        user = request.user
         if newname:
-            user = request.user
-            user.username = newname
-            user.save()
-        return redirect("home")
+            if User.objects.filter(username = newname):
+                posts = Post.objects.filter(user = request.user)
+                context = {'error':"user name exist",'posts':posts}
+                return render(request, "blog/profile.html",context)
+            else:
+                user.username = newname
+            
+            
+        if newpassword:
+            user.set_password(newpassword)
+            update_session_auth_hash(request,user)
+
+        user.save()    
+        return redirect("profile")
     return render(request, "blog/home.html")
 
 
@@ -71,4 +86,15 @@ def create_post(request):
 
 @login_required
 def profile(request):
-    pass
+    user = request.user
+    posts = Post.objects.filter(user = user)
+    context = {'posts':posts}
+    return render(request, "Blog/profile.html",context)
+
+@login_required
+def delete_task(request,pk):
+    if request.method == "POST":
+        post = get_object_or_404(Post,id = pk,user = request.user)
+        post.delete()
+        return redirect("profile")
+    return render(request,"blog/profile.html")
